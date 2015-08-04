@@ -5,30 +5,37 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import net.mostlyoriginal.odb.component.OdbParticle;
 import net.mostlyoriginal.odb.component.OdbPos;
+import net.mostlyoriginal.odb.component.OdbTint;
 import net.mostlyoriginal.odb.component.OdbVelocity;
 
 /**
  * @author Daan van Yperen
  */
 @Wire
-public class OdbPhysicsSystem extends EntityProcessingSystem {
+public class OdbTintSystem extends EntityProcessingSystem {
 
 	protected ComponentMapper<OdbPos> mPos;
 	protected ComponentMapper<OdbVelocity> mVelocity;
+	protected ComponentMapper<OdbTint> mTint;
 
-	public OdbPhysicsSystem() {
-		super(Aspect.all(OdbParticle.class, OdbPos.class, OdbVelocity.class));
+	public OdbTintSystem() {
+		super(Aspect.all(OdbTint.class, OdbParticle.class, OdbPos.class, OdbVelocity.class));
 	}
+
+ 	Vector2 tmp = new Vector2();
 
 	@Override
 	protected void process(Entity e) {
 		final OdbPos pos = mPos.get(e);
 		final OdbVelocity velocity = mVelocity.get(e);
+		final OdbTint tint = mTint.get(e);
 
-		pos.x += velocity.x * world.delta * 50f;
-		pos.y += velocity.y * world.delta * 50f;
-		pos.dirty=true;
+		tmp.set(velocity.x,velocity.y);
+
+		tint.a = MathUtils.clamp(tmp.len() / 10f, 0.1f, 1f);
 	}
 }

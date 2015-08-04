@@ -9,9 +9,7 @@ import net.mostlyoriginal.api.system.render.ClearScreenSystem;
 import net.mostlyoriginal.api.utils.builder.WorldConfigurationBuilder;
 import net.mostlyoriginal.game.system.view.GameScreenAssetSystem;
 import net.mostlyoriginal.game.system.view.GameScreenSetupSystem;
-import net.mostlyoriginal.odb.system.OdbParticleSystem;
-import net.mostlyoriginal.odb.system.OdbPhysicsSystem;
-import net.mostlyoriginal.odb.system.OdbSetupSystem;
+import net.mostlyoriginal.odb.system.*;
 
 /**
  * Example main game screen.
@@ -28,6 +26,9 @@ public class Odb extends WorldScreen {
 						new ClearScreenSystem(Color.valueOf(Shared.BACKGROUND_COLOR_HEX)),
 						new OdbSetupSystem(),
 						new OdbPhysicsSystem(),
+						new OdbQtSystem(),
+						new OdbGravitySystem(),
+						new OdbTintSystem(),
 						new OdbParticleSystem()
 				).build());
 	}

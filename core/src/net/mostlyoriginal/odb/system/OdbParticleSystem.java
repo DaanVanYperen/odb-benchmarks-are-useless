@@ -9,9 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.mostlyoriginal.Shared;
 import net.mostlyoriginal.api.system.camera.CameraSystem;
-import net.mostlyoriginal.odb.component.OdbParticle;
-import net.mostlyoriginal.odb.component.OdbPos;
-import net.mostlyoriginal.odb.component.OdbVelocity;
+import net.mostlyoriginal.odb.component.*;
 
 /**
  * @author Daan van Yperen
@@ -25,6 +23,8 @@ public class OdbParticleSystem extends EntityProcessingSystem {
 
 	protected ComponentMapper<OdbPos> mOdbPos;
 	protected ComponentMapper<OdbVelocity> mOdbVelocity;
+	protected ComponentMapper<OdbScale> mScale;
+	protected ComponentMapper<OdbTint> mTint;
 
 	public OdbParticleSystem() {
 		super(Aspect.all(OdbParticle.class, OdbPos.class, OdbVelocity.class));
@@ -54,9 +54,18 @@ public class OdbParticleSystem extends EntityProcessingSystem {
 		final OdbPos p = mOdbPos.get(e);
 		//final OdbVelocity v = mOdbVelocity.get(e);
 
+		float scale = mScale.get(e).scale;
+
+		if ( mTint.has(e)) {
+			final OdbTint tint = mTint.get(e);
+			batch.setColor(tint.r,tint.g,tint.b,tint.a);
+		}
+
 		batch.draw(particleTexture,
-				p.x,
-				p.y);
+				p.x - scale*0.5f,
+				p.y - scale*0.5f,
+				scale,
+				scale);
 	}
 
 }

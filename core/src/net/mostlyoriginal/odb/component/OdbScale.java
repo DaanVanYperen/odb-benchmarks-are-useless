@@ -7,8 +7,6 @@ import com.artemis.annotations.PooledWeaver;
  * @author Daan van Yperen
  */
 @PooledWeaver
-public class OdbPos extends Component {
-	public float x;
-	public float y;
-	public boolean dirty =false;
+public class OdbScale extends Component {
+	public float scale = 1;
 }
