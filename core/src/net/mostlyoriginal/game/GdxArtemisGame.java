@@ -3,6 +3,7 @@ package net.mostlyoriginal.game;
 import com.badlogic.gdx.Game;
 import net.mostlyoriginal.ashley.Ashley;
 import net.mostlyoriginal.game.screen.detection.OdbFeatureScreen;
+import net.mostlyoriginal.odb.Odb;
 
 public class GdxArtemisGame extends Game {
 
@@ -15,7 +16,7 @@ public class GdxArtemisGame extends Game {
 	}
 
 	public void restart() {
-		setScreen(new Ashley());
+		setScreen(new Odb());
 	}
 
 	public static GdxArtemisGame getInstance()
