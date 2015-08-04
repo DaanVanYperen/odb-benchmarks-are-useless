@@ -83,13 +83,16 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 			tint.b -= 0.01f/dist;
 
 			if (dist < Shared.GRAVITY_DISTANCE) {
-				tmp.nor().scl(invSqrt(dist)*diameter);
-				velocity.x += tmp.x * world.delta;
-				velocity.y += tmp.y * world.delta;
+				tmp.nor().scl(invSqrt(dist)*diameter2 * 0.01f)
+						 .scl(world.delta)
+  		  				 .add(velocity.x,velocity.y)
+ 						 .clamp(0f,10f);
+				velocity.x = tmp.x;
+				velocity.y = tmp.y;
 			}
 		}
 
-		if ( tint.b < 0 ) tint.b = 0;
+		if ( tint.b < 0.2f ) tint.b = 0.2f;
 		tint.r = 1f - tint.b;
 
 	}
