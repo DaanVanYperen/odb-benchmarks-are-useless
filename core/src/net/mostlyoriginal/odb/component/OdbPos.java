@@ -10,5 +10,5 @@ import com.artemis.annotations.PooledWeaver;
 public class OdbPos extends Component {
 	public float x;
 	public float y;
-	public boolean dirty =false;
+	public float dirty =0;
 }

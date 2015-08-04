@@ -10,8 +10,7 @@ public abstract class Shared {
 	public static final float ZOOM = 1;
 	public static final String BACKGROUND_COLOR_HEX = "02080C";
 	public static final int PARTICLE_BATCH_SIZE = 2500;
-	public static final int GRAVITY_DISTANCE = 16;
-	public static int PARTICLE_COUNT = 1000;
+	public static int PARTICLE_COUNT = 10000;
 
 	public static int VP_WIDTH = 800;
 	public static int VP_HEIGHT = 800;

@@ -5,6 +5,8 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import net.mostlyoriginal.odb.component.OdbParticle;
 import net.mostlyoriginal.odb.component.OdbPos;
 import net.mostlyoriginal.odb.component.OdbVelocity;
@@ -22,13 +24,21 @@ public class OdbPhysicsSystem extends EntityProcessingSystem {
 		super(Aspect.all(OdbParticle.class, OdbPos.class, OdbVelocity.class));
 	}
 
+	Vector2 tmp = new Vector2();
+
 	@Override
 	protected void process(Entity e) {
 		final OdbPos pos = mPos.get(e);
 		final OdbVelocity velocity = mVelocity.get(e);
 
-		pos.x += velocity.x * world.delta * 50f;
-		pos.y += velocity.y * world.delta * 50f;
-		pos.dirty=true;
+		final float vx = velocity.x * world.delta * 50f;
+		final float vy = velocity.y * world.delta * 50f;
+
+		final float len = tmp.set(vx, vy).len();
+		tmp.nor().scl(MathUtils.log2(len));
+
+		pos.x += tmp.x;
+		pos.y += tmp.y;
+		pos.dirty+=tmp.len();
 	}
 }

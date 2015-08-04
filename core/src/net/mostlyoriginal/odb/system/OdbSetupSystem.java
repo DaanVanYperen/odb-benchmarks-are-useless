@@ -26,14 +26,30 @@ public class OdbSetupSystem extends PassiveSystem {
 		for (int i = 0; i < Shared.PARTICLE_COUNT; i++) {
 
 			tmp
-					.set(MathUtils.random(-Shared.VP_WIDTH*0.4f, Shared.VP_WIDTH*0.4f), 0)
+					.set(MathUtils.random(-Shared.VP_WIDTH * 0.4f, Shared.VP_WIDTH * 0.4f), 0)
 					.rotate(MathUtils.random(360f))
 					.add(Shared.VP_WIDTH * 0.5f, Shared.VP_HEIGHT * 0.5f);
 
-			particle
-					.pos(tmp.x, tmp.y)
-					.scale(MathUtils.random(0.5f, 4f)).create();
+			final Particle particle = this.particle
+					.pos(tmp.x, tmp.y);
+
+			tmp.sub(Shared.VP_WIDTH * 0.5f, Shared.VP_HEIGHT * 0.5f).rotate90(-1).scl(0.25f);
+
+			final float len = tmp.len();
+			tmp.nor().scl(len*len);
+
+			particle.velocity(tmp.x,tmp.y)
+					.scale(randomScale()).create();
+
 
 		}
+	}
+
+	private float randomScale() {
+		if (MathUtils.random(100) < 1 )
+			return MathUtils.random(5f,8f);
+		if (MathUtils.random(100) < 5 )
+			return MathUtils.random(3f,5f);
+		return MathUtils.random(1f, 3f);
 	}
 }

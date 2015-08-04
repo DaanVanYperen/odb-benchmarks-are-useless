@@ -36,6 +36,6 @@ public class OdbTintSystem extends EntityProcessingSystem {
 
 		tmp.set(velocity.x,velocity.y);
 
-		tint.a = MathUtils.clamp(tmp.len() / 10f, 0.1f, 1f);
+		tint.a = MathUtils.clamp(tmp.len() / 5f, 0.5f, 1f);
 	}
 }

@@ -21,6 +21,7 @@ import net.mostlyoriginal.odb.component.OdbScale;
 @Wire
 public class OdbQtSystem extends EntityProcessingSystem {
 
+	public static final float SIGNIFICANT_MOVEMENT = 8f;
 	private ComponentMapper<OdbPos> mPosition;
 	private ComponentMapper<OdbScale> mScale;
 
@@ -55,20 +56,20 @@ public class OdbQtSystem extends EntityProcessingSystem {
 	@Override
 	protected void inserted(Entity e) {
 		OdbPos position = mPosition.get(e);
-		float diameter = mScale.get(e).scale / 2f;
-		base.insert(e.id, position.x - diameter, position.y- diameter, diameter*2f, diameter*2f);
+		float radius = mScale.get(e).scale / 2f;
+		base.insert(e.id, position.x - radius, position.y- radius, radius*2f, radius*2f);
 	}
 
 	@Override
 	protected void process(Entity e) {
 		OdbPos position = mPosition.get(e);
 		if (rebuild) {
-			float diameter = mScale.get(e).scale / 2f;
-			base.insert(e.id, position.x - diameter, position.y- diameter, diameter*2f, diameter*2f);
-		} else if (position.dirty) {
-			float diameter = mScale.get(e).scale / 2f;
-			base.update(e.id, position.x- diameter, position.y- diameter, diameter*2f, diameter*2f);
-			position.dirty=false;
+			float radius = mScale.get(e).scale / 2f;
+			base.insert(e.id, position.x - radius, position.y- radius, radius*2f, radius*2f);
+		} else if (position.dirty > SIGNIFICANT_MOVEMENT) {
+			float radius = mScale.get(e).scale / 2f;
+			base.update(e.id, position.x- radius, position.y- radius, radius*2f, radius*2f);
+			position.dirty=0f;
 		}
 	}
 
