@@ -135,7 +135,7 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 
 		final float dist = tmp.len();
 
-		final float v = 1f / (float) Math.sqrt((dist/4f));
+		final float v = 1f / (float) Math.sqrt((dist/20f));
 
 		if (dist < 32f) {
 			tint.b -= (0.025f / dist) * radius2;
