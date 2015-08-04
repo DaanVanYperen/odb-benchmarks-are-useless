@@ -46,6 +46,8 @@ public class OdbSetupSystem extends PassiveSystem {
 	}
 
 	private float randomScale() {
+		if (MathUtils.random(100f) < 0.1f )
+			return MathUtils.random(8f,16f);
 		if (MathUtils.random(100) < 1 )
 			return MathUtils.random(5f,8f);
 		if (MathUtils.random(100) < 5 )

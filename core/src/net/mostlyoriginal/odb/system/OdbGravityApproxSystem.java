@@ -51,7 +51,7 @@ public class OdbGravityApproxSystem extends EntityProcessingSystem {
 
 	@Override
 	protected boolean checkProcessing() {
-		return !initialized;
+		return true;
 	}
 
 	@Override

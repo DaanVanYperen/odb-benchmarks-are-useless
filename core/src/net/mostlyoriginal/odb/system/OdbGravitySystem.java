@@ -16,7 +16,7 @@ import net.mostlyoriginal.odb.component.*;
 public class OdbGravitySystem extends EntityProcessingSystem {
 
 	public static final int HIGH_DETAIL_MAX_DISTANCE = 32;
-	public static final int LOW_DETAIL_MAX_DISTANCE = 256;
+	public static final int LOW_DETAIL_MAX_DISTANCE = 128;
 	protected ComponentMapper<OdbPos> mPos;
 	protected ComponentMapper<OdbVelocity> mVelocity;
 	protected ComponentMapper<OdbScale> mScale;

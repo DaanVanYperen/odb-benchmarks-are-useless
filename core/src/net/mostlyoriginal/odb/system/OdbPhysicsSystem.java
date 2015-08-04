@@ -35,7 +35,7 @@ public class OdbPhysicsSystem extends EntityProcessingSystem {
 		final float vy = velocity.y * world.delta * 25f;
 
 		final float len = tmp.set(vx, vy).len();
-		tmp.nor().scl(MathUtils.log2(len)).rotate(velocity.angularMomentum);
+		tmp.nor().scl(MathUtils.log2(len)).rotate(velocity.angularMomentum *world.delta);
 
 		pos.x += tmp.x;
 		pos.y += tmp.y;
