@@ -26,8 +26,11 @@ public class Odb extends WorldScreen {
 						new ClearScreenSystem(Color.valueOf(Shared.BACKGROUND_COLOR_HEX)),
 						new OdbSetupSystem(),
 						new OdbPhysicsSystem(),
+
 						new OdbQtSystem(),
+						new OdbGravityApproxSystem(),
 						new OdbGravitySystem(),
+
 						new OdbTintSystem(),
 						new OdbParticleSystem()
 				).build());

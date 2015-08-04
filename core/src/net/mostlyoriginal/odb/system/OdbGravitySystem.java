@@ -6,7 +6,6 @@ import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.IntBag;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import net.mostlyoriginal.Shared;
 import net.mostlyoriginal.odb.component.*;
@@ -22,6 +21,7 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 	protected ComponentMapper<OdbScale> mScale;
 	protected ComponentMapper<OdbTint> mOdbTint;
 
+	protected OdbGravityApproxSystem gravityApproxSystem;
 	protected OdbQtSystem qtSystem;
 	private Entity fly;
 
@@ -37,6 +37,10 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 		fly = createFlyweightEntity();
 	}
 
+	public Entity createFlyHack() {
+		return createFlyweightEntity();
+	}
+
 	public static float invSqrt(float x) {
 		float xhalf = 0.5f * x;
 		int i = Float.floatToIntBits(x);
@@ -47,6 +51,8 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 	}
 
 	Vector2 tmp = new Vector2();
+
+	OdbPos tmpPos = new OdbPos();
 
 	@Override
 	protected void process(Entity e) {
@@ -63,37 +69,49 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 
 		// tint by proximity.
 		final OdbTint tint = mOdbTint.get(e);
-		tint.g=0;
-		tint.b=1f;
-
+		tint.g = 0;
+		tint.b = 1f;
 
 		final int[] data = overlappingEntities.getData();
 		for (int i = 0, s = overlappingEntities.size(); i < s; i++) {
 			fly.id = data[i];
 
 			// don't influence self.
-			if ( fly.id == e.id )
+			if (fly.id == e.id)
 				continue;
 
-			final OdbPos pos2 = mPos.get(fly);
-			final float diameter2 = mScale.get(e).scale / 2f;
-			tmp.set(pos2.x, pos2.y).sub(pos.x, pos.y);
-			final float dist = tmp.len();
+			affectParticle(pos, velocity, tint, mScale.get(fly).scale / 2f, false, mPos.get(fly).x, mPos.get(fly).y);
+		}
 
-			tint.b -= 0.01f/dist;
-
-			if (dist < Shared.GRAVITY_DISTANCE) {
-				tmp.nor().scl(invSqrt(dist)*diameter2 * 0.01f)
-						 .scl(world.delta)
-  		  				 .add(velocity.x,velocity.y)
- 						 .clamp(0f,10f);
-				velocity.x = tmp.x;
-				velocity.y = tmp.y;
+		for (int x = 0; x < OdbGravityApproxSystem.divX; x++) {
+			for (int y = 0; y < OdbGravityApproxSystem.divY; y++) {
+				if (gravityApproxSystem.grav[x][y]==0)
+					continue;
+				tmpPos.x = x *  gravityApproxSystem.chunkW + gravityApproxSystem.chunkW * 0.5f;
+				tmpPos.y = y *  gravityApproxSystem.chunkH + gravityApproxSystem.chunkH * 0.5f;
+				affectParticle(pos, velocity, tint, gravityApproxSystem.grav[x][y] * 0.5f, true, tmpPos.x, tmpPos.y);
 			}
 		}
 
-		if ( tint.b < 0.2f ) tint.b = 0.2f;
+		if (tint.b < 0.2f) tint.b = 0.2f;
 		tint.r = 1f - tint.b;
 
+	}
+
+	public void affectParticle(OdbPos pos, OdbVelocity velocity, OdbTint tint, float diameter2, boolean ignoreDistance, float x, float y) {
+
+		tmp.set(x, y).sub(pos.x, pos.y);
+		final float dist = tmp.len();
+
+		if (
+				(ignoreDistance && (dist > Shared.GRAVITY_DISTANCE) && (dist < 200))
+				|| (dist <= Shared.GRAVITY_DISTANCE)) {
+			tint.b -= 0.01f / dist;
+
+			tmp.nor().scl(invSqrt(dist) * diameter2 * 0.01f)
+					.scl(world.delta);
+			velocity.x += tmp.x;
+			velocity.y += tmp.y;
+		}
 	}
 }
