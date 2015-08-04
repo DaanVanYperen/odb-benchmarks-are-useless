@@ -1,13 +1,13 @@
 package net.mostlyoriginal.odb.system;
 
-import com.artemis.BaseSystem;
+import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
+import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import net.mostlyoriginal.api.system.physics.GravitySystem;
 import net.mostlyoriginal.odb.component.OdbPos;
 import net.mostlyoriginal.odb.component.OdbScale;
 
@@ -15,20 +15,24 @@ import net.mostlyoriginal.odb.component.OdbScale;
  * @author Daan van Yperen
  */
 @Wire
-public class OdbGravityApproxSystem extends BaseSystem {
+public class OdbGravityApproxSystem extends EntityProcessingSystem {
 
-	public static final int LOW_DETAIL_SCALE = 10;
+
+	public OdbGravityApproxSystem() {
+		super(Aspect.all(OdbScale.class, OdbPos.class));
+	}
+
+	public static final int LOW_DETAIL_SCALE = 4;
 	protected ComponentMapper<OdbScale> mScale;
 	protected ComponentMapper<OdbPos> mOdbPos;
 
-	protected OdbQtSystem qtSystem;
 	protected OdbGravitySystem gravitySystem;
 
 	private Entity fly;
 
-	public static final int divX = 80;
+	public static final int divX = 40;
 	public static final int divXL = divX / LOW_DETAIL_SCALE;
-	public static final int divY = 80;
+	public static final int divY = 40;
 	public static final int divYL = divY / LOW_DETAIL_SCALE;
 
 	public final float[][] gravH = new float[divX][divY];
@@ -42,9 +46,17 @@ public class OdbGravityApproxSystem extends BaseSystem {
 	public float chunkWL;
 	public float chunkHL;
 
-	@Override
-	protected void processSystem() {
+	boolean initialized=false;
 
+
+	@Override
+	protected boolean checkProcessing() {
+		return !initialized;
+	}
+
+	@Override
+	protected void begin() {
+		initialized=true;
 		for (int x = 0; x < divXL; x++) {
 			for (int y = 0; y < divYL; y++) {
 				gravL[x][y] = 0;
@@ -52,38 +64,39 @@ public class OdbGravityApproxSystem extends BaseSystem {
 		}
 		for (int x = 0; x < divX; x++) {
 			for (int y = 0; y < divY; y++) {
-
-				int XL = x / LOW_DETAIL_SCALE;
-				int YL = y / LOW_DETAIL_SCALE;
-
-				overlappingEntities.setSize(0);
-				final IntBag bag = qtSystem.getQuadTree().get(overlappingEntities,
-						chunkW * x,
-						chunkH * y,
-						chunkW,
-						chunkH);
-
 				gravH[x][y] = 0;
-
-				final int[] data = bag.getData();
-				for (int eid = 0, size = bag.size(); eid < size; eid++) {
-					fly.id = data[eid];
-					final OdbPos lPos = mOdbPos.get(fly);
-
-					tmp.set(x*chunkW+chunkW*0.5f, y*chunkH + chunkH*0.5f).sub(lPos.x,lPos.y);
-
-					if ( tmp.len() < chunkW) {
-						gravH[x][y] += 1;
-					}
-
-					tmp.set(XL*chunkWL+chunkWL*0.5f, YL*chunkHL + chunkHL*0.5f).sub(lPos.x,lPos.y);
-					if ( tmp.len() < chunkWL) {
-						gravL[XL][YL] += 1;
-					}
-				}
-
 			}
 		}
+	}
+
+	@Override
+	protected void process(Entity e) {
+
+		final OdbPos pos = mOdbPos.get(e);
+
+		int x = (int) pos.x / (int) chunkW;
+		int y = (int) pos.y / (int) chunkH;
+
+		if (x < 0 || y < 0 || x >= divX || y >= divY) return;
+
+		final OdbScale scale = mScale.get(e);
+
+		// distance from chunk center.
+		tmp.set(x * chunkW + chunkW * 0.5f, y * chunkH + chunkH * 0.5f).sub(pos.x, pos.y);
+
+		if (tmp.len() < chunkW) {
+			gravH[x][y] += scale.scale;
+		}
+
+		int XL = x / LOW_DETAIL_SCALE;
+		int YL = y / LOW_DETAIL_SCALE;
+
+		// distance from large chunk center.
+		tmp.set(XL * chunkWL + chunkWL * 0.5f, YL * chunkHL + chunkHL * 0.5f).sub(pos.x, pos.y);
+		if (tmp.len() < chunkWL) {
+			gravL[XL][YL] += scale.scale;
+		}
+
 	}
 
 	@Override

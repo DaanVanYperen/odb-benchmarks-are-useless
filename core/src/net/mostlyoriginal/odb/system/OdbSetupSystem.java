@@ -33,10 +33,10 @@ public class OdbSetupSystem extends PassiveSystem {
 			final Particle particle = this.particle
 					.pos(tmp.x, tmp.y);
 
-			tmp.sub(Shared.VP_WIDTH * 0.5f, Shared.VP_HEIGHT * 0.5f).rotate90(-1).scl(0.25f);
+			tmp.sub(Shared.VP_WIDTH * 0.5f, Shared.VP_HEIGHT * 0.5f).rotate90(-1).nor();
 
 			final float len = tmp.len();
-			tmp.nor().scl(len*len);
+			//tmp.nor().scl(len*len);
 
 			particle.velocity(tmp.x,tmp.y)
 					.scale(randomScale()).create();

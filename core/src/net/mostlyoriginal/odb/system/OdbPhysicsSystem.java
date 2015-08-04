@@ -31,11 +31,11 @@ public class OdbPhysicsSystem extends EntityProcessingSystem {
 		final OdbPos pos = mPos.get(e);
 		final OdbVelocity velocity = mVelocity.get(e);
 
-		final float vx = velocity.x * world.delta * 50f;
-		final float vy = velocity.y * world.delta * 50f;
+		final float vx = velocity.x * world.delta * 25f;
+		final float vy = velocity.y * world.delta * 25f;
 
 		final float len = tmp.set(vx, vy).len();
-		tmp.nor().scl(MathUtils.log2(len));
+		tmp.nor().scl(MathUtils.log2(len)).rotate(velocity.angularMomentum);
 
 		pos.x += tmp.x;
 		pos.y += tmp.y;

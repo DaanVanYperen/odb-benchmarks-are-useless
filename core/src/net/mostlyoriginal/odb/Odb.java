@@ -27,7 +27,6 @@ public class Odb extends WorldScreen {
 						new OdbSetupSystem(),
 						new OdbPhysicsSystem(),
 
-						new OdbQtSystem(),
 						new OdbGravityApproxSystem(),
 						new OdbGravitySystem(),
 

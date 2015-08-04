@@ -7,7 +7,6 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Vector2;
-import net.mostlyoriginal.Shared;
 import net.mostlyoriginal.odb.component.*;
 
 /**
@@ -16,15 +15,15 @@ import net.mostlyoriginal.odb.component.*;
 @Wire
 public class OdbGravitySystem extends EntityProcessingSystem {
 
-	public static final int HIGH_DETAIL_MAX_DISTANCE = 64;
+	public static final int HIGH_DETAIL_MAX_DISTANCE = 32;
+	public static final int LOW_DETAIL_MAX_DISTANCE = 256;
 	protected ComponentMapper<OdbPos> mPos;
 	protected ComponentMapper<OdbVelocity> mVelocity;
 	protected ComponentMapper<OdbScale> mScale;
 	protected ComponentMapper<OdbTint> mOdbTint;
 
 	protected OdbGravityApproxSystem gravityApproxSystem;
-	protected OdbQtSystem qtSystem;
-	private Entity fly;
+	private boolean applyLowDetailGravity = true;
 
 	public OdbGravitySystem() {
 		super(Aspect.all(OdbParticle.class, OdbPos.class, OdbVelocity.class));
@@ -35,7 +34,6 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		fly = createFlyweightEntity();
 	}
 
 	public Entity createFlyHack() {
@@ -65,57 +63,61 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 		tint.g = 0;
 		tint.b = 1f;
 
-		/*
-		final int[] data = overlappingEntities.getData();
-		for (int i = 0, s = overlappingEntities.size(); i < s; i++) {
-			fly.id = data[i];
+		// apply low detail long distance gravity field.
 
-			// don't influence self.
-			if (fly.id == e.id)
-				continue;
+		if (applyLowDetailGravity) {
+			int x1 = (int) ((pos.x - LOW_DETAIL_MAX_DISTANCE) / (float)gravityApproxSystem.chunkWL + 0.5f);
+			int y1 = (int) ((pos.y - LOW_DETAIL_MAX_DISTANCE) / (float)gravityApproxSystem.chunkHL + 0.5f);
+			int x2 = (int) ((pos.x + LOW_DETAIL_MAX_DISTANCE) / (float)gravityApproxSystem.chunkWL + 0.5f);
+			int y2 = (int) ((pos.y + LOW_DETAIL_MAX_DISTANCE) / (float)gravityApproxSystem.chunkHL + 0.5f);
 
-			final OdbPos otherPos = mPos.get(fly);
-			affectParticle(pos, velocity, tint, mScale.get(fly).scale*0.5f, false, otherPos.x, otherPos.y);
-		}*/
-		for (int x = 0; x < OdbGravityApproxSystem.divX/OdbGravityApproxSystem.LOW_DETAIL_SCALE; x++) {
-			for (int y = 0; y < OdbGravityApproxSystem.divY /OdbGravityApproxSystem.LOW_DETAIL_SCALE; y++) {
-				if (gravityApproxSystem.gravL[x][y] == 0)
-					continue;
+			if (x1 < 0) x1 = 0;
+			if (y1 < 0) y1 = 0;
+			if (x2 > OdbGravityApproxSystem.divXL) x2 = OdbGravityApproxSystem.divXL;
+			if (y2 > OdbGravityApproxSystem.divYL) y2 = OdbGravityApproxSystem.divYL;
 
-				tmpPos.x = x * gravityApproxSystem.chunkWL + gravityApproxSystem.chunkWL * 0.5f;
-				tmpPos.y = y * gravityApproxSystem.chunkHL + gravityApproxSystem.chunkHL * 0.5f;
-				tmp.set(tmpPos.x, tmpPos.y).sub(pos.x, pos.y);
-				if ( tmp.len() > HIGH_DETAIL_MAX_DISTANCE) {
-					affectParticle(pos, velocity, tint, gravityApproxSystem.gravL[x][y] * 0.5f, true, tmpPos.x, tmpPos.y);
+			for (int x = x1; x < x2; x++) {
+				for (int y = y1; y < y2; y++) {
+					if (gravityApproxSystem.gravL[x][y] == 0)
+						continue;
+
+					tmpPos.x = x * gravityApproxSystem.chunkWL + gravityApproxSystem.chunkWL * 0.5f;
+					tmpPos.y = y * gravityApproxSystem.chunkHL + gravityApproxSystem.chunkHL * 0.5f;
+					tmp.set(tmpPos.x, tmpPos.y).sub(pos.x, pos.y);
+					if (tmp.len() > HIGH_DETAIL_MAX_DISTANCE) {
+						affectParticle(pos, velocity, tint, gravityApproxSystem.gravL[x][y] * 0.05f, true, tmpPos.x, tmpPos.y);
+					}
 				}
 			}
 		}
 
-		int x1 = (int) ((pos.x - HIGH_DETAIL_MAX_DISTANCE) / gravityApproxSystem.chunkW);
-		int y1 = (int) ((pos.y - HIGH_DETAIL_MAX_DISTANCE) / gravityApproxSystem.chunkW);
-		int x2 = (int) ((pos.x + HIGH_DETAIL_MAX_DISTANCE) / gravityApproxSystem.chunkW);
-		int y2 = (int) ((pos.y + HIGH_DETAIL_MAX_DISTANCE) / gravityApproxSystem.chunkW);
+		{
+			int x1 = (int) ((pos.x - HIGH_DETAIL_MAX_DISTANCE) / (float)gravityApproxSystem.chunkW + 0.5f);
+			int y1 = (int) ((pos.y - HIGH_DETAIL_MAX_DISTANCE) / (float)gravityApproxSystem.chunkH + 0.5f);
+			int x2 = (int) ((pos.x + HIGH_DETAIL_MAX_DISTANCE) / (float)gravityApproxSystem.chunkW + 0.5f);
+			int y2 = (int) ((pos.y + HIGH_DETAIL_MAX_DISTANCE) / (float)gravityApproxSystem.chunkH + 0.5f);
 
-		if (x1 < 0 ) x1=0;
-		if (y1 < 0 ) y1=0;
-		if (x2 > OdbGravityApproxSystem.divX ) x2 = OdbGravityApproxSystem.divX;
-		if (y2 > OdbGravityApproxSystem.divY ) y2 = OdbGravityApproxSystem.divY;
+			if (x1 < 0) x1 = 0;
+			if (y1 < 0) y1 = 0;
+			if (x2 > OdbGravityApproxSystem.divX) x2 = OdbGravityApproxSystem.divX;
+			if (y2 > OdbGravityApproxSystem.divY) y2 = OdbGravityApproxSystem.divY;
 
-		for (int x = x1; x < x2; x++) {
-			for (int y = y1; y < y2; y++) {
-				if (gravityApproxSystem.gravH[x][y] == 0 )
-					continue;
+			for (int x = x1; x < x2; x++) {
+				for (int y = y1; y < y2; y++) {
+					if (gravityApproxSystem.gravH[x][y] == 0)
+						continue;
 
-				tmpPos.x = x * gravityApproxSystem.chunkW + gravityApproxSystem.chunkW * 0.5f;
-				tmpPos.y = y * gravityApproxSystem.chunkH + gravityApproxSystem.chunkH * 0.5f;
-				tmp.set(tmpPos.x, tmpPos.y).sub(pos.x, pos.y);
-				if ( tmp.len() <= HIGH_DETAIL_MAX_DISTANCE) {
-					affectParticle(pos, velocity, tint, gravityApproxSystem.gravH[x][y] * 0.5f, true, tmpPos.x, tmpPos.y);
+					tmpPos.x = x * gravityApproxSystem.chunkW + gravityApproxSystem.chunkW * 0.5f;
+					tmpPos.y = y * gravityApproxSystem.chunkH + gravityApproxSystem.chunkH * 0.5f;
+					tmp.set(tmpPos.x, tmpPos.y).sub(pos.x, pos.y);
+					if (tmp.len() <= HIGH_DETAIL_MAX_DISTANCE) {
+						affectParticle(pos, velocity, tint, gravityApproxSystem.gravH[x][y] * 0.5f, true, tmpPos.x, tmpPos.y);
+					}
 				}
 			}
 		}
 
-		if (tint.g > 1f) tint.g=1f;
+		if (tint.g > 1f) tint.g = 1f;
 		if (tint.b < 0.2f) tint.b = 0.2f;
 		tint.r = 1f - tint.b;
 
@@ -127,17 +129,17 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 
 		final float dist = tmp.len();
 
-		final float v = 1f/(float)Math.sqrt(dist);
+		final float v = 1f / (float) Math.sqrt(dist);
 
-		if ( dist < 16f ) {
-			tint.b -= (0.1f / dist) * radius2;
+		if (dist < 32f) {
+			tint.b -= (0.025f / dist) * radius2;
 		}
 
-		if ( dist < 8f ) {
-			tint.g += (0.05f / dist) * radius2;
+		if (dist < 16f) {
+			tint.g += (0.005f / dist) * radius2;
 		}
 
-		tmp.nor().scl(v * radius2 * 0.005f * world.delta);
+		tmp.nor().scl(v * radius2 * 0.008f * world.delta);
 		velocity.x += tmp.x;
 		velocity.y += tmp.y;
 	}
