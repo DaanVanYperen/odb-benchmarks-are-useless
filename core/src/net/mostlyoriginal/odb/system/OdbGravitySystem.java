@@ -7,6 +7,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Vector2;
+import net.mostlyoriginal.Shared;
 import net.mostlyoriginal.odb.component.*;
 
 /**
@@ -16,7 +17,7 @@ import net.mostlyoriginal.odb.component.*;
 public class OdbGravitySystem extends EntityProcessingSystem {
 
 	public static final int HIGH_DETAIL_MAX_DISTANCE = 32;
-	public static final int LOW_DETAIL_MAX_DISTANCE = 128;
+	public static final int LOW_DETAIL_MAX_DISTANCE = 256;
 	protected ComponentMapper<OdbPos> mPos;
 	protected ComponentMapper<OdbVelocity> mVelocity;
 	protected ComponentMapper<OdbScale> mScale;
@@ -63,6 +64,11 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 		tint.g = 0;
 		tint.b = 1f;
 
+
+		// add attraction to center of screen.
+
+		affectParticle(pos, velocity, tint, 400, true, Shared.VP_WIDTH/2,Shared.VP_HEIGHT/2);
+
 		// apply low detail long distance gravity field.
 
 		if (applyLowDetailGravity) {
@@ -84,8 +90,8 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 					tmpPos.x = x * gravityApproxSystem.chunkWL + gravityApproxSystem.chunkWL * 0.5f;
 					tmpPos.y = y * gravityApproxSystem.chunkHL + gravityApproxSystem.chunkHL * 0.5f;
 					tmp.set(tmpPos.x, tmpPos.y).sub(pos.x, pos.y);
-					if (tmp.len() > HIGH_DETAIL_MAX_DISTANCE) {
-						affectParticle(pos, velocity, tint, gravityApproxSystem.gravL[x][y] * 0.05f, true, tmpPos.x, tmpPos.y);
+					if (tmp.len() > HIGH_DETAIL_MAX_DISTANCE && tmp.len() <= LOW_DETAIL_MAX_DISTANCE) {
+						affectParticle(pos, velocity, tint, gravityApproxSystem.gravL[x][y] * 0.5f, true, tmpPos.x, tmpPos.y);
 					}
 				}
 			}
@@ -129,7 +135,7 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 
 		final float dist = tmp.len();
 
-		final float v = 1f / (float) Math.sqrt(dist);
+		final float v = 1f / (float) Math.sqrt((dist/4f));
 
 		if (dist < 32f) {
 			tint.b -= (0.025f / dist) * radius2;
@@ -139,7 +145,7 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 			tint.g += (0.005f / dist) * radius2;
 		}
 
-		tmp.nor().scl(v * radius2 * 0.008f * world.delta);
+		tmp.nor().scl(v * radius2 * world.delta);
 		velocity.x += tmp.x;
 		velocity.y += tmp.y;
 	}

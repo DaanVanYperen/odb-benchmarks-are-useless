@@ -13,5 +13,5 @@ public class OdbVelocity extends Component {
 	public float y;
 	public float z;
 
-	public float angularMomentum = MathUtils.random(1f, 90f);
+	public float angularMomentum = MathUtils.random(15f, 240f);
 }
