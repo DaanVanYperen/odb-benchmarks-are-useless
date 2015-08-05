@@ -2,6 +2,7 @@ package net.mostlyoriginal.odb;
 
 import com.artemis.World;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import net.mostlyoriginal.Shared;
 import net.mostlyoriginal.api.screen.core.WorldScreen;
 import net.mostlyoriginal.api.system.camera.CameraSystem;
@@ -34,5 +35,6 @@ public class Odb extends WorldScreen {
 						new OdbParticleSystem()
 				).build());
 	}
+
 
 }

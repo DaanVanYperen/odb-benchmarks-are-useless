@@ -6,21 +6,23 @@ import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.IntBag;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import net.mostlyoriginal.Shared;
+import net.mostlyoriginal.api.system.core.TimeboxedProcessingSystem;
 import net.mostlyoriginal.odb.component.*;
 
 /**
  * @author Daan van Yperen
  */
 @Wire
-public class OdbGravitySystem extends EntityProcessingSystem {
+public class OdbGravitySystem extends TimeboxedProcessingSystem {
 
-	public static final int HIGH_DETAIL_MAX_DISTANCE = 32;
-	public static final int LOW_DETAIL_MAX_DISTANCE = 256;
+	public static final int HIGH_DETAIL_MAX_DISTANCE = 64;
+	public static final int LOW_DETAIL_MAX_DISTANCE = 512;
 	protected ComponentMapper<OdbPos> mPos;
 	protected ComponentMapper<OdbVelocity> mVelocity;
-	protected ComponentMapper<OdbScale> mScale;
 	protected ComponentMapper<OdbTint> mOdbTint;
 
 	protected OdbGravityApproxSystem gravityApproxSystem;
@@ -50,6 +52,12 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 		return x;
 	}
 
+	@Override
+	protected void begin() {
+		super.begin();
+		System.out.println(Gdx.graphics.getFramesPerSecond());
+	}
+
 	Vector2 tmp = new Vector2();
 
 	OdbPos tmpPos = new OdbPos();
@@ -67,7 +75,8 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 
 		// add attraction to center of screen.
 
-		affectParticle(pos, velocity, tint, 400, true, Shared.VP_WIDTH/2,Shared.VP_HEIGHT/2);
+		tmp.set(Shared.VP_WIDTH/2,Shared.VP_HEIGHT/2).sub(pos.x, pos.y);
+		affectParticle(velocity, tint, 400, tmp.len());
 
 		// apply low detail long distance gravity field.
 
@@ -90,8 +99,9 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 					tmpPos.x = x * gravityApproxSystem.chunkWL + gravityApproxSystem.chunkWL * 0.5f;
 					tmpPos.y = y * gravityApproxSystem.chunkHL + gravityApproxSystem.chunkHL * 0.5f;
 					tmp.set(tmpPos.x, tmpPos.y).sub(pos.x, pos.y);
-					if (tmp.len() > HIGH_DETAIL_MAX_DISTANCE && tmp.len() <= LOW_DETAIL_MAX_DISTANCE) {
-						affectParticle(pos, velocity, tint, gravityApproxSystem.gravL[x][y] * 0.5f, true, tmpPos.x, tmpPos.y);
+					final float len = tmp.len();
+					if (len > HIGH_DETAIL_MAX_DISTANCE && len <= LOW_DETAIL_MAX_DISTANCE) {
+						affectParticle(velocity, tint, gravityApproxSystem.gravL[x][y] * 0.5f, len);
 					}
 				}
 			}
@@ -116,8 +126,9 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 					tmpPos.x = x * gravityApproxSystem.chunkW + gravityApproxSystem.chunkW * 0.5f;
 					tmpPos.y = y * gravityApproxSystem.chunkH + gravityApproxSystem.chunkH * 0.5f;
 					tmp.set(tmpPos.x, tmpPos.y).sub(pos.x, pos.y);
-					if (tmp.len() <= HIGH_DETAIL_MAX_DISTANCE) {
-						affectParticle(pos, velocity, tint, gravityApproxSystem.gravH[x][y] * 0.5f, true, tmpPos.x, tmpPos.y);
+					final float len = tmp.len();
+					if (len <= HIGH_DETAIL_MAX_DISTANCE) {
+						affectParticle(velocity, tint, gravityApproxSystem.gravH[x][y] * 0.5f, len);
 					}
 				}
 			}
@@ -129,11 +140,12 @@ public class OdbGravitySystem extends EntityProcessingSystem {
 
 	}
 
-	public void affectParticle(OdbPos pos, OdbVelocity velocity, OdbTint tint, float radius2, boolean ignoreDistance, float x, float y) {
+	@Override
+	protected float getAllottedTime() {
+		return 0.02f;
+	}
 
-		tmp.set(x, y).sub(pos.x, pos.y);
-
-		final float dist = tmp.len();
+	public void affectParticle(OdbVelocity velocity, OdbTint tint, float radius2, float dist) {
 
 		final float v = 1f / (float) Math.sqrt((dist/20f));
 
