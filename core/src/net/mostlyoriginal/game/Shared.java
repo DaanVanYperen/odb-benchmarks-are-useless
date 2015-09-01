@@ -1,4 +1,4 @@
-package net.mostlyoriginal;
+package net.mostlyoriginal.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

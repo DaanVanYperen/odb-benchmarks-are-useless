@@ -3,4 +3,5 @@
 <module>
 	<source path="net/mostlyoriginal/game" />
     <source path="net/mostlyoriginal/api" />
-</module>
+    <source path="net/mostlyoriginal/odb" />
+</module>   

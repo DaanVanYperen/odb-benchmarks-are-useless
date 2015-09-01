@@ -7,7 +7,8 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.Bag;
 import com.artemis.utils.IntBag;
-import net.mostlyoriginal.Shared;
+import com.badlogic.gdx.utils.TimeUtils;
+import net.mostlyoriginal.game.Shared;
 import net.mostlyoriginal.api.utils.pooling.ObjectPool;
 import net.mostlyoriginal.api.utils.pooling.Poolable;
 import net.mostlyoriginal.api.utils.pooling.Pools;
@@ -47,7 +48,7 @@ public class OdbQtSystem extends EntityProcessingSystem {
 
 	@Override
 	protected void begin() {
-		start = System.nanoTime();
+		start = TimeUtils.nanoTime();
 		if (rebuild) {
 			base.reset();
 		}
@@ -80,7 +81,7 @@ public class OdbQtSystem extends EntityProcessingSystem {
 
 	@Override
 	protected void end() {
-		diff = System.nanoTime() - start;
+		diff = TimeUtils.nanoTime() - start;
 	}
 
 	public QuadTree getQuadTree() {

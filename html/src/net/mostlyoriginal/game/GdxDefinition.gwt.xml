@@ -5,6 +5,7 @@
     <inherits name='com.artemis.backends.artemis_backends_gwt' />
 	<inherits name='net.mostlyoriginal.ContribJam' />
 	<inherits name='net.mostlyoriginal.ContribEventBus' />
+	<inherits name='net.mostlyoriginal.ContribPluginProfiler' />
 	<!--<inherits name='com.badlogic.gdx.physics.box2d.box2d-gwt' />
 	<inherits name='Box2DLights' />
 	<inherits name='com.badlogic.gdx.ai' />-->
@@ -14,6 +15,8 @@
 	<extend-configuration-property name="artemis.reflect.include" value="net.mostlyoriginal.game.system" />
 	<extend-configuration-property name="artemis.reflect.include" value="net.mostlyoriginal.game.screen" />
 	<extend-configuration-property name="artemis.reflect.include" value="net.mostlyoriginal.api" />
+	<extend-configuration-property name="artemis.reflect.include" value="net.mostlyoriginal.odb" />
+	<extend-configuration-property name="artemis.reflect.include" value="net.mostlyoriginal.plugin.ProfilerSystem" />
 
 	<extend-configuration-property name="gdx.reflect.include" value="net.mostlyoriginal.api.step" />
 

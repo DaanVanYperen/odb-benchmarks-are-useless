@@ -2,7 +2,7 @@ package net.mostlyoriginal.game.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import net.mostlyoriginal.Shared;
+import net.mostlyoriginal.game.Shared;
 import net.mostlyoriginal.game.GdxArtemisGame;
 
 public class DesktopLauncher {

@@ -7,7 +7,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import net.mostlyoriginal.Shared;
+import net.mostlyoriginal.game.Shared;
 import net.mostlyoriginal.api.system.camera.CameraSystem;
 import net.mostlyoriginal.odb.component.*;
 

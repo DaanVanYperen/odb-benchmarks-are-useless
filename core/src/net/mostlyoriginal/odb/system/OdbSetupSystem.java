@@ -4,7 +4,7 @@ import com.artemis.annotations.Wire;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import net.mostlyoriginal.Shared;
+import net.mostlyoriginal.game.Shared;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import net.mostlyoriginal.odb.archetype.Particle;
 

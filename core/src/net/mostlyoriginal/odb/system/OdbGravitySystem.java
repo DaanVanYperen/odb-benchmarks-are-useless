@@ -4,12 +4,8 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.EntityProcessingSystem;
-import com.artemis.utils.IntBag;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import net.mostlyoriginal.Shared;
+import net.mostlyoriginal.game.Shared;
 import net.mostlyoriginal.api.system.core.TimeboxedProcessingSystem;
 import net.mostlyoriginal.odb.component.*;
 
