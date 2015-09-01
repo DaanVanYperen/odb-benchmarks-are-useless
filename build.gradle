@@ -146,6 +146,7 @@ project(":html") {
         compile "net.mostlyoriginal.artemis-odb:contrib-core:$artemisContribVersion:sources"
         compile "net.mostlyoriginal.artemis-odb:contrib-jam:$artemisContribVersion:sources"
         compile "net.mostlyoriginal.artemis-odb:contrib-eventbus:$artemisContribVersion:sources"
+        compile "net.mostlyoriginal.artemis-odb:contrib-plugin-profile:$artemisContribVersion:sources"
     }
 }
 
@@ -187,6 +188,7 @@ project(":core") {
         compile "net.mostlyoriginal.artemis-odb:contrib-core:$artemisContribVersion"
         compile "net.mostlyoriginal.artemis-odb:contrib-jam:$artemisContribVersion"
         compile "net.mostlyoriginal.artemis-odb:contrib-eventbus:$artemisContribVersion"
+        compile "net.mostlyoriginal.artemis-odb:contrib-plugin-profile:$artemisContribVersion"
 
         compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
     }

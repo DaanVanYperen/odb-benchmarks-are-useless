@@ -32,8 +32,6 @@ public class OdbGravitySystem extends TimeboxedProcessingSystem {
 		super(Aspect.all(OdbParticle.class, OdbPos.class, OdbVelocity.class));
 	}
 
-	protected IntBag overlappingEntities = new IntBag(1024);
-
 	@Override
 	protected void initialize() {
 		super.initialize();
@@ -141,7 +139,7 @@ public class OdbGravitySystem extends TimeboxedProcessingSystem {
 
 	@Override
 	protected float getAllottedTime() {
-		return (1f/60f);
+		return 0.010f;
 	}
 
 	public void affectParticle(OdbVelocity velocity, OdbTint tint, float radius2, float dist) {
