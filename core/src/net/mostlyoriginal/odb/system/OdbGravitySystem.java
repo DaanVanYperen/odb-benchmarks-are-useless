@@ -55,7 +55,6 @@ public class OdbGravitySystem extends TimeboxedProcessingSystem {
 	@Override
 	protected void begin() {
 		super.begin();
-		System.out.println(Gdx.graphics.getFramesPerSecond());
 	}
 
 	Vector2 tmp = new Vector2();
@@ -142,7 +141,7 @@ public class OdbGravitySystem extends TimeboxedProcessingSystem {
 
 	@Override
 	protected float getAllottedTime() {
-		return 0.02f;
+		return (1f/60f);
 	}
 
 	public void affectParticle(OdbVelocity velocity, OdbTint tint, float radius2, float dist) {

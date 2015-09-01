@@ -54,10 +54,10 @@ public class OdbQtSystem extends EntityProcessingSystem {
 	}
 
 	@Override
-	protected void inserted(Entity e) {
-		OdbPos position = mPosition.get(e);
-		float radius = mScale.get(e).scale / 2f;
-		base.insert(e.id, position.x - radius, position.y- radius, radius*2f, radius*2f);
+	protected void inserted(int id) {
+		OdbPos position = mPosition.get(id);
+		float radius = mScale.get(id).scale / 2f;
+		base.insert(id, position.x - radius, position.y- radius, radius*2f, radius*2f);
 	}
 
 	@Override
@@ -74,8 +74,8 @@ public class OdbQtSystem extends EntityProcessingSystem {
 	}
 
 	@Override
-	protected void removed(Entity e) {
-		base.remove(e.id);
+	protected void removed(int id) {
+		base.remove(id);
 	}
 
 	@Override
