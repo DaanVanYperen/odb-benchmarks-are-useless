@@ -4,14 +4,18 @@ import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.TagManager;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Interpolation;
 import net.mostlyoriginal.api.component.graphics.Tint;
-import net.mostlyoriginal.api.component.script.Schedule;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import net.mostlyoriginal.game.component.detection.OdbFeatureComponent;
-import net.mostlyoriginal.odb.Odb;
+import net.mostlyoriginal.game.screen.GameScreen;
 import net.mostlyoriginal.game.system.detection.OdbFeatureDetectionSystem;
 import net.mostlyoriginal.game.system.logic.TransitionSystem;
 import net.mostlyoriginal.game.util.Anims;
+import net.mostlyoriginal.game.util.MyEntityEditor;
+
+import static net.mostlyoriginal.api.operation.OperationFactory.*;
+import static net.mostlyoriginal.api.utils.Duration.seconds;
 
 /**
  * @author Daan van Yperen
@@ -20,12 +24,16 @@ import net.mostlyoriginal.game.util.Anims;
 public class FeatureScreenSetupSystem extends PassiveSystem {
 
 	public static final int FEATURE_BORDER_MARGIN = 1;
-	public static final Tint Tint_FEATURE_FADED = new Tint(0.8f, 1.0f, 1.0f, 0.3f);
-	public static final Tint Tint_FEATURE_OFF = new Tint(0.8f, 1.0f, 1.0f, 0.0f);
-	public static final Tint Tint_FEATURE_ON_OFF_Tint = new Tint(0.8f, 1.0f, 1.0f, 1.0f);
-	public static final Tint Tint_FEATURE_ON = new Tint(1.0f, 1.0f, 1.0f, 1.0f);
-	public static final Tint Tint_LOGO_FADED = new Tint(1.0f, 1.0f, 1.0f, 0.0f);
-	public static final Tint Tint_LOGO_FULL = new Tint(1.0f, 1.0f, 1.0f, 1.0f);
+	public static final Tint COLOR_FEATURE_FADED = new Tint(0.8f, 1.0f, 1.0f, 0.3f);
+	private final Tint TINT_FEATURE_FADED = new Tint(COLOR_FEATURE_FADED);
+	public static final Tint COLOR_FEATURE_OFF = new Tint(0.8f, 1.0f, 1.0f, 0.0f);
+	private final Tint TINT_FEATURE_OFF = new Tint(COLOR_FEATURE_OFF);
+	public static final Tint COLOR_FEATURE_ON_OFF_COLOR = new Tint(0.8f, 1.0f, 1.0f, 1.0f);
+	private final Tint TINE_FEATURE_ON_OFF = new Tint(COLOR_FEATURE_ON_OFF_COLOR);
+	public static final Tint COLOR_FEATURE_ON = new Tint(1.0f, 1.0f, 1.0f, 1.0f);
+	private final Tint TINT_FEATURE_ON = new Tint(COLOR_FEATURE_ON);
+	public static final Tint COLOR_LOGO_FADED = new Tint(1.0f, 1.0f, 1.0f, 0.0f);
+	public static final Tint COLOR_LOGO_FULL = new Tint(1.0f, 1.0f, 1.0f, 1.0f);
 	FeatureScreenAssetSystem assetSystem;
 	TagManager tagManager;
 
@@ -75,19 +83,24 @@ public class FeatureScreenSetupSystem extends PassiveSystem {
 				scale);
 
 		if (state) {
-			entity.edit()
-					.add(new Tint(Tint_FEATURE_OFF))
-					.add(new Schedule()
-							.wait(0.5f + iconIndex * 0.1f)
-							.tween(Tint_LOGO_FADED, Tint_LOGO_FULL, 2f)
-							.wait(1.0f / 2.0f)
-							.tween(Tint_FEATURE_ON_OFF_Tint, Tint_FEATURE_ON, 4.0f));
+			MyEntityEditor.instance()
+					.edit(entity)
+					.tint(COLOR_FEATURE_OFF)
+					.schedule(
+							sequence(
+									delay(seconds(0.5f + iconIndex * 0.1f)),
+									tween(TINT_FEATURE_OFF, TINE_FEATURE_ON_OFF, seconds(2)),
+									tween(TINE_FEATURE_ON_OFF, TINT_FEATURE_ON, seconds(2))
+							));
 		} else {
-			entity.edit()
-					.add(new Tint(Tint_FEATURE_OFF))
-					.add(new Schedule()
-							.wait(0.5f + iconIndex * 0.1f)
-							.tween(Tint_FEATURE_OFF, Tint_FEATURE_FADED, 2f));
+			MyEntityEditor.instance()
+					.edit(entity)
+					.tint(COLOR_FEATURE_OFF)
+					.schedule(
+							sequence(
+									delay(seconds(0.5f + iconIndex * 0.1f)),
+									tween(TINT_FEATURE_OFF, TINT_FEATURE_FADED, seconds(2))
+							));
 		}
 	}
 
@@ -101,17 +114,18 @@ public class FeatureScreenSetupSystem extends PassiveSystem {
 				"logo",
 				Anims.scaleToScreenRounded(0.8f, FeatureScreenAssetSystem.LOGO_WIDTH));
 
-		entity.edit()
-				.add(new Tint(Tint_LOGO_FADED))
-				.add(new Schedule()
-						.tween(Tint_LOGO_FADED, Tint_LOGO_FULL,2f)
-						.wait(0.5f));
+		MyEntityEditor.instance().edit(entity)
+				.tint(COLOR_LOGO_FADED)
+				.schedule(
+						tween(new Tint(COLOR_LOGO_FADED), new Tint(COLOR_LOGO_FULL), 2f, Interpolation.fade)
+				);
 	}
 
 	public static final int DISPLAY_SECONDS = 2;
 
+
 	private void scheduleTransitionToGameScreen() {
-		world.getSystem(TransitionSystem.class).transition(Odb.class, DISPLAY_SECONDS);
+		world.getSystem(TransitionSystem.class).transition(GameScreen.class, DISPLAY_SECONDS);
 	}
 
 }
