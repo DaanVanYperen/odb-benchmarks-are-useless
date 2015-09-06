@@ -1,6 +1,8 @@
 package net.mostlyoriginal.odb;
 
 import com.artemis.World;
+import com.artemis.io.JsonArtemisSerializer;
+import com.artemis.managers.WorldSerializationManager;
 import com.badlogic.gdx.graphics.Color;
 import net.mostlyoriginal.game.Shared;
 import net.mostlyoriginal.api.plugin.extendedcomponentmapper.ExtendedComponentMapperPlugin;
@@ -20,9 +22,13 @@ public class Odb extends WorldScreen {
 
 	@Override
 	protected World createWorld() {
-	return new World(new WorldConfigurationBuilder()
+
+		final WorldSerializationManager worldSerializationManager = new WorldSerializationManager();
+
+		World world = new World(new WorldConfigurationBuilder()
 				.dependsOn(ProfilerPlugin.class)
 				.dependsOn(ExtendedComponentMapperPlugin.class)
+				.with(worldSerializationManager)
 				.with(
 						new CameraSystem(Shared.ZOOM),
 						new ClearScreenSystem(Color.valueOf(Shared.BACKGROUND_COLOR_HEX)),
@@ -35,6 +41,11 @@ public class Odb extends WorldScreen {
 						new OdbTintSystem(),
 						new OdbParticleSystem()
 				).build());
+
+
+		worldSerializationManager.setSerializer(new JsonArtemisSerializer(world));
+
+		return world;
 	}
 
 

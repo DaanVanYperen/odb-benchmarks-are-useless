@@ -8,11 +8,11 @@ import com.badlogic.gdx.math.Interpolation;
 import net.mostlyoriginal.api.component.graphics.Tint;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import net.mostlyoriginal.game.component.detection.OdbFeatureComponent;
-import net.mostlyoriginal.game.screen.GameScreen;
 import net.mostlyoriginal.game.system.detection.OdbFeatureDetectionSystem;
 import net.mostlyoriginal.game.system.logic.TransitionSystem;
 import net.mostlyoriginal.game.util.Anims;
 import net.mostlyoriginal.game.util.MyEntityEditor;
+import net.mostlyoriginal.odb.Odb;
 
 import static net.mostlyoriginal.api.operation.OperationFactory.*;
 import static net.mostlyoriginal.api.utils.Duration.seconds;
@@ -125,7 +125,7 @@ public class FeatureScreenSetupSystem extends PassiveSystem {
 
 
 	private void scheduleTransitionToGameScreen() {
-		world.getSystem(TransitionSystem.class).transition(GameScreen.class, DISPLAY_SECONDS);
+		world.getSystem(TransitionSystem.class).transition(Odb.class, DISPLAY_SECONDS);
 	}
 
 }
